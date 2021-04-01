@@ -1,12 +1,12 @@
 name: shiny4
-title: shiny4
+title:
 username:
 account: vf92ti-0-0
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
-appId: 3889629
-bundleId: 4414778
+appId: 3894973
+bundleId: 4418517
 url: https://vf92ti-0-0.shinyapps.io/shiny4/
-when: 1617173936.0788
+when: 1617242524.60886
 asMultiple: FALSE
 asStatic: FALSE
