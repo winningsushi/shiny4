@@ -1,0 +1,10 @@
+mainPanel(
+  tabsetPanel(
+    tabPanel("RawData", br(),
+             dataTableOutput("table")
+             ),
+    tabPanel("누적 수익률",br(),
+             plotOutput("perfPlot")
+             )
+  )
+)

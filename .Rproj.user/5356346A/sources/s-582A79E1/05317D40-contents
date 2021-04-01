@@ -1,0 +1,20 @@
+filedata <- reactive({
+  infile <- input$dataset
+  if (is.null(infile)) {
+    # User has not uploaded a file yet
+    return(NULL)
+  }
+  rets <- read.zoo(infile$datapath, header = TRUE, sep = ',',fileEncoding="UTF-8-BOM")
+  rets <- na.omit(as.xts(rets))
+  start_day <- index(rets)[1]
+  end_day <- index(rets)[length(index(rets))]
+  period <- paste0(start_day,"::", end_day)
+  return(rets)
+})
+period <- reactive({
+  rets <- filedata()
+  start_day <- index(rets)[1]
+  end_day <- index(rets)[length(index(rets))]
+  period <- paste0(start_day,"::", end_day)
+  return(period)
+})

@@ -1,0 +1,8 @@
+mainPanel(
+  tabsetPanel(
+    tabPanel("RawData", br(),
+             dataTableOutput("table")
+             ),
+    tabPanel("Tab 2")
+  )
+)

@@ -1,0 +1,21 @@
+mainPanel(
+  tabsetPanel(
+    tabPanel("RawData", br(),
+             dataTableOutput("table")
+             ),
+    tabPanel("누적 수익률",br(),
+             plotOutput("perfPlot")
+             ),
+    tabPanel("공분산",br(),
+             dataTableOutput("covs")
+    ),
+    tabPanel("종목별 위험 수익",br(),
+             plotOutput("yearly_stat")
+    ),
+    tabPanel("효율적 프론티어", br(),
+             tableOutput("target_minvol"),
+             tableOutput("target_maxsharpe")
+    )
+
+  )
+)

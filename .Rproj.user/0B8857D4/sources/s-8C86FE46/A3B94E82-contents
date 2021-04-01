@@ -1,0 +1,175 @@
+library(quantmod)
+library(PerformanceAnalytics)
+library(magrittr)
+library(ggplot2)
+library(plotly)
+
+#codeinput start
+
+# 
+# symbols = c('005930.KS', '068270.KS', '005380.KS', '055550.KS', '017670.KS')
+# names = c('삼성전자', '셀트리온', '현대차', '신한지주', 'SK텔레콤')
+# getSymbols(symbols, src='yahoo')
+# Rf=0.02
+# prices = do.call(cbind, lapply(symbols, function(x) Cl(get(x)))) %>% setNames(symbols)
+# rets = Return.calculate(prices) %>% na.omit() #일별 수익률 테이블
+
+#codeinput end ##return rets
+
+# #csvinput start
+etfdb <- read.csv("K:/project/etfdb.csv", header = TRUE, sep = ',',fileEncoding="UTF-8-BOM")
+etfdb
+rets <- read.zoo("K:/project/yellowmark.csv", header = TRUE, sep = ',',encoding="UTF-8")
+rets <- na.omit(as.xts(rets))
+start_day <- index(rets)[1]
+end_day <- index(rets)[length(index(rets))]
+period <- paste0(start_day,"::", end_day)
+
+Rfdata <- read.zoo("K:/project/rf_data.csv", header = TRUE, sep = ',',encoding="UTF-8")
+Rfdata <- na.omit(as.xts(Rfdata))
+Rfdata <- Rfdata[period]
+Rf= Return.annualized(Rfdata, geometric = FALSE) %>% c()
+
+
+names = colnames(rets)
+# #csvinput end ## return rets
+
+names(rets) = names #컬럼명을 심볼에서 이름으로 변경
+covs = cov(rets) * 252 # 공분산 연율화
+
+charts.PerformanceSummary(rets, main = '누적수익률')
+
+yearly_mean = Return.annualized(rets, geometric = FALSE) %>% c()
+yearly_mean
+yearly_vol = StdDev.annualized(rets) %>% c()
+yearly_vol
+
+# diag(covs) ^ (1/2)
+
+yearly_stat = cbind(yearly_mean, yearly_vol) %>%
+  data.frame()
+
+yearly_stat %>%
+  ggplot(aes(x = yearly_vol, y = yearly_mean, label = names, color = names)) +
+  geom_point(shape = 18) +
+  scale_x_continuous(expand = c(0.02, 0.02)) + 
+  scale_y_continuous(expand = c(0.02, 0.02)) +
+  geom_text(size = 3, vjust = -0.7) +
+  theme(legend.position = 'none') +)
+  xlab('Volatility') +
+  ylab('Return')
+
+
+# Simulation
+numAssets = length(names)
+numPortfolio = 10000
+sim = list()
+for (i in 1 : numPortfolio) {
+  
+  wt = runif(numAssets, min=0, max=1)
+  wt = wt / sum(wt)
+  expected_return = wt %*% yearly_mean
+  expected_vol = (t(wt) %*% covs %*% wt) %>% sqrt()
+  expected_sharpe = (expected_return-Rf) / expected_vol
+  risk_freerate = Rf
+  sim[[i]] = c(wt, expected_return, expected_vol, expected_sharpe, risk_freerate)
+  
+}
+
+sim = do.call(rbind, sim) %>% data.frame()
+colnames(sim) = c(names, 'Return', 'Volatility', 'Sharpe', 'Rf')
+
+target_minvol = sim[which.min(sim$Volatility), ]
+target_maxsharpe = sim[which.max(sim$Sharpe), ]
+target_maxsharpe
+
+
+# plot simulation
+p = sim %>%
+  ggplot(aes(x = `Volatility`, y = `Return`, color = `Sharpe`)) +
+  geom_point() +
+  scale_color_gradient(low = 'Blue', high = 'Orange') +
+  theme_classic()
+ggplotly(p)
+
+
+# plot min vol and max sharpe
+p2 = p +
+  geom_point(data = target_minvol,
+             aes(x = Volatility, y = Return),
+             col = 'black', shape = 18, size = 3) +
+  geom_point(data = target_maxsharpe,
+             aes(x = Volatility, y = Return),
+             col = 'black', shape = 18, size = 3) +
+  annotate('text',
+           x = target_minvol$Volatility + 0.03,
+           y = target_minvol$Return,
+           label='Min Vol',
+           fontface=2) +
+  annotate('text',
+           x = target_maxsharpe$Volatility + 0.03,
+           y = target_maxsharpe$Return,
+           label='Max Sharpe',
+           fontface=2) +
+  geom_point(data = yearly_stat,
+             aes(x = yearly_vol, y = yearly_mean),
+             color = 'black', shape = 4, size = 3)
+ggplotly(p2)
+
+
+# plot CML
+
+p3=p2 + 
+  geom_abline(intercept = Rf,
+              slope = target_maxsharpe$Sharpe,
+              size = 1) +
+  expand_limits(x=0) +
+  expand_limits(y=0) 
+
+ggplotly(p3)
+target_minvol
+target_maxsharpe
+
+#결과물 후처리 시작 
+collist <- colnames(target_minvol) %>% c()
+collist
+codelist <- c()
+for( x in collist){
+  code <- gsub('\\D','', x)
+  if ( code ==""){
+  }
+  else{
+  codelist = c(codelist, code)
+  }
+}
+codelist<- paste0("A", codelist)
+
+etfname = c()
+benchlist = c()
+ipoday = c()
+for (k in codelist){
+  y =etfdb[etfdb$코드 == k,]
+  etfname = c(etfname, y$종목명)
+  benchlist = c(benchlist, y$기초지수)
+  ipoday = c(ipoday, y$상장일)
+}
+
+newvec <- c("","","","")
+etfname <- c(etfname, newvec)
+benchlist <- c(benchlist, newvec)
+ipoday = c(ipoday, newvec)
+
+target_minvol[2, ] <- etfname
+target_minvol[3, ] <- benchlist
+target_minvol[4, ] <- ipoday
+
+target_maxsharpe[2, ] <- etfname
+target_maxsharpe[3, ] <- benchlist
+target_maxsharpe[4, ] <- ipoday
+
+target_minvol
+write.csv(target_maxsharpe,"E:/target_maxsharpe.csv", row.names = FALSE)
+write.csv(target_minvol,"E:/target_minvol.csv", row.names = FALSE)
+print("======================== 분석 종료 =======================")
+print(paste0("데이터 기간 : ", period))
+
