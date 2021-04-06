@@ -14,7 +14,11 @@ mainPanel(
     ),
     tabPanel("효율적 프론티어", br(),
              tableOutput("target_minvol"),
-             tableOutput("target_maxsharpe")
+             tableOutput("target_maxsharpe"),
+             plotOutput("p3"),
+             plotOutput("p2")
+             
+             
     )
 
   )

@@ -1,27 +1,26 @@
 {
-    "id": "A7C322CA",
-    "path": "E:/project/shiny4/read_data.R",
-    "project_path": "read_data.R",
+    "id": "C1BEEE0A",
+    "path": "E:/project/shiny4/app.R",
+    "project_path": "app.R",
     "type": "r_source",
     "hash": "0",
     "contents": "",
     "dirty": false,
-    "created": 1617174812794.0,
+    "created": 1617157726816.0,
     "source_on_save": false,
-    "relative_order": 3,
+    "relative_order": 1,
     "properties": {
-        "tempName": "Untitled1",
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "2,1",
-        "scrollLine": "0"
+        "cursorPosition": "19,15",
+        "scrollLine": "11"
     },
     "folds": "",
-    "lastKnownWriteTime": 1617169350,
+    "lastKnownWriteTime": 1617671348,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1617169350,
+    "last_content_update": 1617671346035,
     "read_only": false,
     "read_only_alternatives": []
 }

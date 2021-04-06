@@ -42,14 +42,51 @@ frontier <- reactive({
   sim = do.call(rbind, sim) %>% data.frame()
   colnames(sim) = c(names, 'Return', 'Volatility', 'Sharpe', 'Rf')
   
-  target_minvol = sim[which.min(sim$Volatility), ]
-  target_maxsharpe = sim[which.max(sim$Sharpe), ]
+  target_minvol <- sim[which.min(sim$Volatility), ]
+  target_maxsharpe <- sim[which.max(sim$Sharpe), ]
+
+  p = sim %>%
+    ggplot(aes(x = `Volatility`, y = `Return`, color = `Sharpe`)) +
+    geom_point() +
+    scale_color_gradient(low = 'Blue', high = 'Orange') +
+    theme_classic()
+  # 
+  # # plot min vol and max sharpe
+  p2 = p +
+    geom_point(data = data.frame(target_minvol),
+               aes(x = Volatility, y = Return),
+               col = 'black', shape = 18, size = 3) +
+    geom_point(data =  data.frame(target_maxsharpe),
+               aes(x = Volatility, y = Return),
+               col = 'black', shape = 18, size = 3) +
+    annotate('text',
+             x = target_minvol$Volatility + 0.03,
+             y = target_minvol$Return,
+             label='Min Vol',
+             fontface=2) +
+    annotate('text',
+             x = target_maxsharpe$Volatility + 0.03,
+             y = target_maxsharpe$Return,
+             label='Max Sharpe',
+             fontface=2)
   
+  p3=p2 + 
+    geom_abline(intercept = Rf,
+                slope = target_maxsharpe$Sharpe,
+                size = 1) +
+    expand_limits(x=0) +
+    expand_limits(y=0) 
   
+    # geom_point(data = data.frame(yearly_stat),
+    #            aes(x = yearly_vol, y = yearly_mean),
+    #            color = 'black', shape = 4, size = 3)
+
   return(list(covs = covs,
               yearly_stat = yearly_stat,
               target_minvol = target_minvol,
-              target_maxsharpe = target_maxsharpe
+              target_maxsharpe = target_maxsharpe,
+              p3 = p3,
+              p2 = p2
               ))
 
 })
@@ -66,32 +103,17 @@ output$target_minvol = renderTable(
 output$target_maxsharpe = renderTable(
   frontier()$target_maxsharpe
 )
+output$p3 = renderPlot(
+  frontier()$p3
+)
 
+output$p2 = renderPlot(
+  frontier()$p2
+)
 
 # 
 # # Simulation
-# numAssets = length(names)
-# numPortfolio = 10000
-# sim = list()
-# for (i in 1 : numPortfolio) {
-#   
-#   wt = runif(numAssets, min=0, max=1)
-#   wt = wt / sum(wt)
-#   expected_return = wt %*% yearly_mean
-#   expected_vol = (t(wt) %*% covs %*% wt) %>% sqrt()
-#   expected_sharpe = (expected_return-Rf) / expected_vol
-#   risk_freerate = Rf
-#   sim[[i]] = c(wt, expected_return, expected_vol, expected_sharpe, risk_freerate)
-#   
-# }
-# 
-# sim = do.call(rbind, sim) %>% data.frame()
-# colnames(sim) = c(names, 'Return', 'Volatility', 'Sharpe', 'Rf')
-# 
-# target_minvol = sim[which.min(sim$Volatility), ]
-# target_maxsharpe = sim[which.max(sim$Sharpe), ]
-# target_maxsharpe
-# 
+ 
 # 
 # # plot simulation
 # p = sim %>%

@@ -1,0 +1,12 @@
+#실습 파일
+library(stringr)
+library(xts)
+library(magrittr)
+
+KOR_ticker = read.csv('K:/quant_cookbook-master/data/KOR_ticker.csv',fileEncoding="UTF-8-BOM", row.names = 1)
+
+KOR_ticker$'종목코드' =
+  str_pad(KOR_ticker$'종목코드', 6, side = c('left'), pad = '0')
+
+price_list = list()
+
