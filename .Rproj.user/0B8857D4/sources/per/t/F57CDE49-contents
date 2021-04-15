@@ -17,15 +17,15 @@ library(plotly)
 #codeinput end ##return rets
 
 # #csvinput start
-etfdb <- read.csv("K:/project/etfdb.csv", header = TRUE, sep = ',',fileEncoding="UTF-8-BOM")
+etfdb <- read.csv("E:/project/etfdb.csv", header = TRUE, sep = ',',fileEncoding="UTF-8-BOM")
 etfdb
-rets <- read.zoo("K:/project/yellowmark.csv", header = TRUE, sep = ',',encoding="UTF-8")
+rets <- read.zoo("E:/project/yellowmark.csv", header = TRUE, sep = ',',encoding="UTF-8")
 rets <- na.omit(as.xts(rets))
 start_day <- index(rets)[1]
 end_day <- index(rets)[length(index(rets))]
 period <- paste0(start_day,"::", end_day)
 
-Rfdata <- read.zoo("K:/project/rf_data.csv", header = TRUE, sep = ',',encoding="UTF-8")
+Rfdata <- read.zoo("E:/project/rf_data.csv", header = TRUE, sep = ',',encoding="UTF-8")
 Rfdata <- na.omit(as.xts(Rfdata))
 Rfdata <- Rfdata[period]
 Rf= Return.annualized(Rfdata, geometric = FALSE) %>% c()
@@ -139,7 +139,7 @@ for( x in collist){
   if ( code ==""){
   }
   else{
-  codelist = c(codelist, code)
+    codelist = c(codelist, code)
   }
 }
 codelist<- paste0("A", codelist)
@@ -173,3 +173,5 @@ write.csv(target_minvol,"E:/target_minvol.csv", row.names = FALSE)
 print("======================== 분석 종료 =======================")
 print(paste0("데이터 기간 : ", period))
 
+Return.portfolio(rets, value = 1, verbose = TRUE)
+backtest

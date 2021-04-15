@@ -10,7 +10,7 @@ library(shinythemes)
 library(knitr)
 library(kableExtra)
 library(magrittr)
-library(shinyWidgets)
+library(shinyWidgets) 
 library(lubridate)
 library(stringr)
 library(ggplot2)
@@ -34,13 +34,14 @@ ui <- navbarPage(
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
-    
 
-    source('filedata.R',encoding="utf-8", local = TRUE)$value #리액티브 객체
+    source('input.R',encoding="utf-8", local = TRUE)$value #리액티브 객체
+
+    source('filedataload.R',encoding="utf-8", local = TRUE)$value #리액티브 객체
     source('read_data.R',encoding="utf-8", local = TRUE)$value
     source('cum_return.R',encoding="utf-8", local = TRUE)$value
     source('frontier.R',encoding="utf-8", local = TRUE)$value #리액티브 객체
-    
+    source('backtest.R',encoding="utf-8", local = TRUE)$value # 포트폴리오 백테스트
     
 }
 

@@ -10,7 +10,8 @@ sidebarPanel(
       actionButton("goButton", "Go!", class = "btn-success")
     ),
     tabPanel("웹에서 데이터 로드", br(),
-      actionButton("goButton", "Go!", class = "btn-success")
+             
+     actionButton("add", "종목추가", icon=icon("plus", class=NULL, lib="font-awesome"))
     )
   )
 )

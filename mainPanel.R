@@ -18,9 +18,14 @@ mainPanel(
              tableOutput("target_maxsharpe"),
              plotOutput("p3"),
              plotOutput("p2")
+    ),
+    tabPanel("포트폴리오 백테스트", br(),
+             textInput("weight", "비중", placeholder ="0.5,0.5"),
+             textOutput("annual_return"),
+             plotOutput("backtestPlot")
              
-             
-    )
+             )
+    
 
   )
 )

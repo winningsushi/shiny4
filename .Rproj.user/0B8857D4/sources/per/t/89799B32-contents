@@ -22,8 +22,15 @@ sidebarPanel(
                     "설정기간" = "custom")),
      dateInput("startdate2", "시작일:", value = "2019-06-26", format = "yyyy/mm/dd"),
      dateInput("enddate2", "종료일:", value = "2021-03-02", format = "yyyy/mm/dd"),
-     actionButton("submit2", label = "Submit2")
-
+     
+     
+     actionButton("submit2", label = "Submit")
+     # radioButtons("dateoption", "데이터 기간을 설정하세요",
+     #              c("전체기간" = "total",
+     #                "설정기간" = "custom")),
+     # dateInput("startdate", "시작일:", value = "2019-06-26", format = "yyyy/mm/dd"),
+     # dateInput("enddate", "종료일:", value = "2021-03-02", format = "yyyy/mm/dd"),
+     
     )
   )
 )
