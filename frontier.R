@@ -2,11 +2,31 @@
 frontier <- reactive({
 
   rets <- filedata()
-  Rf <- 0.01
+  start_day <- index(rets)[1]
+  end_day <- index(rets)[length(index(rets))]
+  period <- paste0(start_day,"::", end_day)
+  
+  Rfdata <- read.zoo("rf_data.csv", header = TRUE, sep = ',',encoding="UTF-8")
+  Rfdata <- na.omit(as.xts(Rfdata))
+  Rfdata <- Rfdata[period]
+  Rf= Return.annualized(Rfdata, geometric = FALSE) %>% c()
+  # 
+  
+  # Rf <- 0.01
   names = colnames(rets)
   # 
   # names(rets) = names #컬럼명을 심볼에서 이름으로 변경
   covs <- cov(rets) * 252 # 공분산 연율화
+  corr <- cor(rets)
+  
+  corr_plot <- cor(rets) %>%
+    corrplot(method = 'color', type = 'upper',
+             addCoef.col = 'black', number.cex = 0.7,
+             tl.cex = 0.6, tl.srt=45, tl.col = 'black',
+             col =
+               colorRampPalette(c('blue', 'white', 'red'))(200),
+             mar = c(0,0,0.5,0))
+  
   yearly_mean = Return.annualized(rets, geometric = FALSE) %>% c()
   yearly_vol = StdDev.annualized(rets) %>% c()
   
@@ -82,6 +102,8 @@ frontier <- reactive({
     #            color = 'black', shape = 4, size = 3)
 
   return(list(covs = covs,
+              corr = corr,
+              corr_plot = corr_plot, 
               yearly_stat = yearly_stat,
               target_minvol = target_minvol,
               target_maxsharpe = target_maxsharpe,
@@ -93,6 +115,16 @@ frontier <- reactive({
 
 output$covs = renderDT(
   frontier()$covs
+)
+output$corr = renderDT(
+  frontier()$corr
+)
+output$corr_plot = renderPlot(
+  frontier()$corr_plot
+)
+
+output$yearly_stat <- renderPlot(
+  frontier()$yearly_stat
 )
 output$yearly_stat <- renderPlot(
   frontier()$yearly_stat
